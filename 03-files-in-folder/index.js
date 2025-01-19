@@ -10,7 +10,7 @@ fs.readdir(
       console.log(err);
     } else {
       files.forEach((file) => {
-        if (!file.isDirectory()) {
+        if (file.isFile()) {
           fs.stat(
             path.join(__dirname, 'secret-folder', file.name),
             (err, stat) => {
