@@ -91,50 +91,44 @@ fs.readdir(
 mkdir(path.join(__dirname, 'project-dist', 'assets'), { recursive: true });
 // ============================================================================
 
+function readFile(file, filePath) {
+  if (file.isFile()) {
+    fs.copyFile(
+      path.join(__dirname, 'assets', filePath, file.name),
+      path.join(__dirname, 'project-dist', 'assets', filePath, file.name),
+      (err) => {
+        if (err) {
+          console.log('Error Found:', err);
+        }
+      },
+    );
+  } else if (file.isDirectory()) {
+    mkdir(path.join(__dirname, 'project-dist', 'assets', filePath, file.name), {
+      recursive: true,
+    });
+    fs.readdir(
+      path.join(__dirname, 'assets', filePath, file.name),
+      { withFileTypes: true },
+      (err, files) => {
+        filePath = path.join(filePath, file.name);
+        files.forEach((file) => {
+          readFile(file, filePath);
+        });
+      },
+    );
+  }
+}
+
 fs.readdir(
   path.join(__dirname, 'assets'),
   { withFileTypes: true },
-  (err, filesSssets) => {
+  (err, filesAssets) => {
     if (err) {
       console.log(err);
     } else {
-      filesSssets.forEach((fileAssets) => {
-        if (fileAssets.isDirectory) {
-          fs.readdir(
-            path.join(__dirname, 'assets', fileAssets.name),
-            (err, files) => {
-              files.forEach((file) => {
-                let fileName = String(file);
-                mkdir(
-                  path.join(
-                    __dirname,
-                    'project-dist',
-                    'assets',
-                    fileAssets.name,
-                  ),
-                  { recursive: true },
-                );
-                // ===========================================================================
-                fs.copyFile(
-                  path.join(__dirname, 'assets', fileAssets.name, fileName),
-                  path.join(
-                    __dirname,
-                    'project-dist',
-                    'assets',
-                    fileAssets.name,
-                    fileName,
-                  ),
-                  (err) => {
-                    if (err) {
-                      console.log('Error Found:', err);
-                    }
-                  },
-                );
-                // ===========================================================================
-              });
-            },
-          );
-        }
+      filesAssets.forEach((fileAssets) => {
+        let assetsPath = '';
+        readFile(fileAssets, assetsPath);
       });
     }
   },
