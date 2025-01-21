@@ -1,7 +1,7 @@
 const { mkdir } = require('node:fs/promises');
 const fs = require('fs');
 const path = require('path');
-
+let copyFiles = [];
 // ============================================================================
 mkdir(path.join(__dirname, 'files-copy'), { recursive: true });
 // ============================================================================
@@ -11,6 +11,7 @@ fs.readdir(path.join(__dirname, 'files'), (err, files) => {
     console.log(err);
   } else {
     files.forEach((file) => {
+      copyFiles.push(file);
       let fileName = String(file);
       // ===========================================================================
       fs.copyFile(
@@ -22,6 +23,20 @@ fs.readdir(path.join(__dirname, 'files'), (err, files) => {
           }
         },
       );
+      // ===========================================================================
+    });
+  }
+});
+fs.readdir(path.join(__dirname, 'files-copy'), (err, files) => {
+  if (err) {
+    console.log(err);
+  } else {
+    files.forEach((file) => {
+      if (!copyFiles.includes(file)) {
+        fs.unlink(path.join(__dirname, 'files-copy', file), (err) => {
+          if (err) throw err;
+        });
+      }
       // ===========================================================================
     });
   }
