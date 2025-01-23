@@ -3,7 +3,10 @@ const fs = require('fs');
 const path = require('path');
 let copyFiles = [];
 // ============================================================================
-mkdir(path.join(__dirname, 'files-copy'), { recursive: true });
+async function createFolder() {
+  await mkdir(path.join(__dirname, 'files-copy'), { recursive: true });
+}
+createFolder();
 // ============================================================================
 
 fs.readdir(path.join(__dirname, 'files'), (err, files) => {
